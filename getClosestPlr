@@ -1,0 +1,55 @@
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local CurrentCamera = Workspace.CurrentCamera
+local mouse = Players.LocalPlayer:GetMouse()
+
+local function GetClosestPlayer()
+    local closestPlayer = nil
+    local closestDistance = math.huge
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if
+            player.Character
+            and player.Character:FindFirstChild("Humanoid")
+            and player.Character:FindFirstChild("LowerTorso")  
+            and player.Character.Humanoid.Health > 0
+            and player ~= Players.LocalPlayer
+        then
+            local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+            if humanoidRootPart then
+                local rootPosition, onScreen = CurrentCamera:WorldToViewportPoint(humanoidRootPart.Position)
+
+                if onScreen then
+                    local distance = (Vector2.new(rootPosition.X, rootPosition.Y) - Vector2.new(mouse.X, mouse.Y)).Magnitude
+
+                    if distance < closestDistance then
+                        closestDistance = distance
+                        closestPlayer = player
+                    end
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+--// Shit dick example on how to use it, for esp it is different
+--// Ill leave my implementation of how i used it in esp below
+
+local closestPlayer = GetClosestPlayer()
+if closestPlayer then
+    print("Closest player:", closestPlayer.Name)
+else
+    print("Cum Slut")
+end
+
+--[[
+--// Esp Example
+
+local closestPlayer = GetClosestPlayer()
+Box.Color = (closestPlayer == v) and Color3.new(1, 0, 0) or Color3.new(1, 1, 1)
+
+]]
+
+-- Note: Using this in esp was all i did if u plan to use this elsewhere i suggest updating the source a little bit, when i used it in esp i didnt add a maxrange or FOV for it so someones box is always highlighted even if ur mouse isnt near a player someone will be highlighted u can adjust this easily though and isnt even a big issue, i worded this terribly cos its dumb to explain i just dont want discord dms asking me why i left a 'bug' in it
